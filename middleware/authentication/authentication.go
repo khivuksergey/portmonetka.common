@@ -1,8 +1,8 @@
-package authorization
+package authentication
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/khivuksergey/portmonetka.middleware"
+	common "github.com/khivuksergey/portmonetka.common"
 	"github.com/khivuksergey/webserver/logger"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -31,28 +31,28 @@ func (a *AuthenticationMiddleware) Authenticate(next echo.HandlerFunc) echo.Hand
 		// take user token from jwt
 		user, ok := c.Get("user").(*jwt.Token)
 		if !ok {
-			return middleware.NewAuthorizationError(invalidToken, noUserTokenError)
+			return common.NewAuthorizationError(invalidToken, noUserTokenError)
 		}
 
 		claims, ok := user.Claims.(jwt.MapClaims)
 		if !ok {
-			return middleware.NewAuthorizationError(invalidToken, invalidTokenClaimsError)
+			return common.NewAuthorizationError(invalidToken, invalidTokenClaimsError)
 		}
 
 		sub, ok := claims["sub"].(float64)
 		if !ok {
-			return middleware.NewAuthorizationError(invalidToken, invalidSubjectClaimError)
+			return common.NewAuthorizationError(invalidToken, invalidSubjectClaimError)
 		}
 		subject := uint64(sub)
 
 		// take userId path param
 		userId, err := strconv.ParseUint(c.Param("userId"), 10, 64)
 		if err != nil {
-			return middleware.NewAuthorizationError(invalidPathParam, nil)
+			return common.NewAuthorizationError(invalidPathParam, nil)
 		}
 
 		if subject != userId {
-			return middleware.NewAuthorizationError(unauthorizedAccess, nil)
+			return common.NewAuthorizationError(unauthorizedAccess, nil)
 		}
 
 		c.Set("userId", userId)

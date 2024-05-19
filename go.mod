@@ -1,4 +1,4 @@
-module github.com/khivuksergey/portmonetka.middleware
+module github.com/khivuksergey/portmonetka.common
 
 go 1.22.0
 

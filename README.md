@@ -1,2 +1,2 @@
-# portmonetka.middleware
-Middlewares used in Portmonetka
+# portmonetka.common
+Common packages used in Portmonetka

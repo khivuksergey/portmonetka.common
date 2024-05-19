@@ -1,8 +1,8 @@
-package authorization
+package authentication
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/khivuksergey/portmonetka.middleware"
+	common "github.com/khivuksergey/portmonetka.common"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -28,22 +28,22 @@ var testCases = []testCase{
 	{
 		token:          nil,
 		pathParamValue: "",
-		expectedError:  middleware.AuthorizationError{},
+		expectedError:  common.AuthorizationError{},
 	},
 	{
 		token:          jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{}),
 		pathParamValue: "",
-		expectedError:  middleware.AuthorizationError{},
+		expectedError:  common.AuthorizationError{},
 	},
 	{
 		token:          jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": userId}),
 		pathParamValue: "",
-		expectedError:  middleware.AuthorizationError{},
+		expectedError:  common.AuthorizationError{},
 	},
 	{
 		token:          jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": userId}),
 		pathParamValue: invalidIdStr,
-		expectedError:  middleware.AuthorizationError{},
+		expectedError:  common.AuthorizationError{},
 	},
 }
 

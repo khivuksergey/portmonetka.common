@@ -3,17 +3,15 @@ package error
 import (
 	"errors"
 	"github.com/google/uuid"
-	middleware "github.com/khivuksergey/portmonetka.middleware"
+	common "github.com/khivuksergey/portmonetka.common"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
-const RequestUuidKey = "request_uuid"
-
 var (
-	authorizationError       = &middleware.AuthorizationError{}
-	validationError          = &middleware.ValidationError{}
-	unprocessableEntityError = &middleware.UnprocessableEntityError{}
+	authorizationError       = &common.AuthorizationError{}
+	validationError          = &common.ValidationError{}
+	unprocessableEntityError = &common.UnprocessableEntityError{}
 	echoHttpError            *echo.HTTPError
 )
 
@@ -27,7 +25,7 @@ func (e *ErrorHandlingMiddleware) HandleError(next echo.HandlerFunc) echo.Handle
 	return func(c echo.Context) error {
 		var err error
 
-		requestUuid, ok := c.Get(RequestUuidKey).(string)
+		requestUuid, ok := c.Get(common.RequestUuidKey).(string)
 		if ok {
 			err = uuid.Validate(requestUuid)
 		}
@@ -36,7 +34,7 @@ func (e *ErrorHandlingMiddleware) HandleError(next echo.HandlerFunc) echo.Handle
 			requestUuid = uuid.New().String()
 		}
 
-		c.Set(RequestUuidKey, requestUuid)
+		c.Set(common.RequestUuidKey, requestUuid)
 
 		err = next(c)
 
@@ -46,28 +44,28 @@ func (e *ErrorHandlingMiddleware) HandleError(next echo.HandlerFunc) echo.Handle
 
 		switch {
 		case errors.As(err, authorizationError):
-			return c.JSON(http.StatusUnauthorized, middleware.Response{
+			return c.JSON(http.StatusUnauthorized, common.Response{
 				Message:     err.Error(),
 				RequestUuid: requestUuid,
 			})
 		case errors.As(err, validationError):
-			return c.JSON(http.StatusBadRequest, middleware.Response{
+			return c.JSON(http.StatusBadRequest, common.Response{
 				Message:     err.Error(),
 				RequestUuid: requestUuid,
 			})
 		case errors.As(err, unprocessableEntityError):
-			return c.JSON(http.StatusUnprocessableEntity, middleware.Response{
+			return c.JSON(http.StatusUnprocessableEntity, common.Response{
 				Message:     err.Error(),
 				RequestUuid: requestUuid,
 			})
 		case errors.As(err, &echoHttpError):
 			echoErr := err.(*echo.HTTPError)
-			return c.JSON(echoErr.Code, middleware.Response{
+			return c.JSON(echoErr.Code, common.Response{
 				Message:     echoErr.Message.(string),
 				RequestUuid: requestUuid,
 			})
 		default:
-			return c.JSON(http.StatusInternalServerError, middleware.Response{
+			return c.JSON(http.StatusInternalServerError, common.Response{
 				Message:     "internal server error",
 				Data:        err,
 				RequestUuid: requestUuid,
