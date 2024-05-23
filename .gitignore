@@ -19,6 +19,7 @@
 
 # Go workspace file
 go.work
+.idea
 /.idea/.name
 /.idea/modules.xml
 /.idea/portmonetka.common.iml
