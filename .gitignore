@@ -19,3 +19,7 @@
 
 # Go workspace file
 go.work
+/.idea/.name
+/.idea/modules.xml
+/.idea/portmonetka.common.iml
+/.idea/vcs.xml
